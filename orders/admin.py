@@ -1,0 +1,48 @@
+""" Model administrator """
+
+from django.contrib import admin
+from .models import User, Client, Material, OrderStatus, Order, OrderUser, OrderMaterial
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'first_name', 'f_lastname', 'm_lastname', 'role', 'email', 'is_active')
+    list_filter = ('role', 'is_active', 'is_staff')
+    search_fields = ('username', 'first_name', 'f_lastname', 'email')
+    ordering = ('username',)
+
+@admin.register(Client)
+class ClientAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+@admin.register(Material)
+class MaterialAdmin(admin.ModelAdmin):
+    list_display = ('name', 'stock')
+    search_fields = ('name',)
+
+@admin.register(OrderStatus)
+class OrderStatusAdmin(admin.ModelAdmin):
+    list_display = ('status',)
+    search_fields = ('status',)
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'client', 'description', 'quantity', 'start_date', 'delivery_date', 'status', 'created_by')
+    list_filter = ('status', 'start_date', 'delivery_date')
+    search_fields = ('client__name', 'description')
+    ordering = ('-start_date',)
+    autocomplete_fields = ('client', 'status', 'created_by')
+
+@admin.register(OrderUser)
+class OrderUserAdmin(admin.ModelAdmin):
+    list_display = ('order', 'user')
+    list_filter = ('order', 'user')
+    search_fields = ('order__id', 'user__username')
+    autocomplete_fields = ('order', 'user')
+
+@admin.register(OrderMaterial)
+class OrderMaterialAdmin(admin.ModelAdmin):
+    list_display = ('order', 'material', 'material_quantity')
+    list_filter = ('order', 'material')
+    search_fields = ('order__id', 'material__name')
+    autocomplete_fields = ('order', 'material')

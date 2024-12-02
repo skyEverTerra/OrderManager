@@ -1,0 +1,226 @@
+:root {
+    --primary-color: #dd5b1e; /* Color de fondo principal */
+    --text-color: #212529; /* Texto en colores oscuros */
+    --secondary-color: #6c757d; /* Texto gris claro */
+    --background-color: #f8f9fa; /* Fondo de contenedores */
+    --border-color: #dee2e6; /* Color de bordes ligeros */
+    --scrollbar-thumb-color: #6c757d; /* Color del thumb de la barra */
+}
+
+body {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Navigation bar */
+.navbar {
+    background-color: var(--primary-color);
+    padding: 10px 20px;
+}
+
+.navbar-brand {
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-item img, 
+.nav-item i {
+    transition: transform 0.2s ease;
+}
+
+.nav-item:hover img,
+.nav-item:hover i {
+    transform: scale(1.1); 
+}
+
+/* Container */
+.main-body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--primary-color);
+}
+
+.rounded-container {
+    background-color: var(--background-color);
+    border-radius: 15px;
+    padding: 20px;
+    height: 100%;
+    overflow: auto;
+    max-height: 83vh;
+}
+
+.container-wrapper {
+    flex: 1;
+    margin: 10px;
+}
+
+/* Management */
+.title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+}
+
+.btn-color {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-color:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--background-color);
+}
+
+.actions-row .btn {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+}
+
+.table-container {
+    max-height: calc(90vh - 150px);
+    overflow-y: auto;
+    overflow-x: auto;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.table {
+    text-align: center;
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.table th {
+    position: sticky;
+    top: 0;
+    background-color: var(--text-color);
+    z-index: 2;
+    text-align: center;
+    border-color: var(--text-color);
+    border: 1px;
+}
+
+.table tbody tr td:first-child {
+    white-space: nowrap;
+}
+
+.badge {
+    font-size: 0.85rem;
+    padding: 5px 10px;
+    border-radius: 12px;
+}
+
+.table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background-color: var(--background-color);
+}
+
+.table-container {
+    max-height: calc(90vh - 150px);
+    overflow-y: auto;
+    overflow-x: auto;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.table {
+    text-align: center;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: white;
+}
+
+.table thead tr {
+    border-radius: 12px;
+}
+
+.table th {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+}
+
+.table th:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.table th:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.table tbody tr {
+    border-radius: 12px;
+}
+
+.table tbody tr td {
+    padding: 10px;
+    vertical-align: middle;
+    border: 1px solid var(--border-color);
+}
+
+.table tbody tr td:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    white-space: nowrap;
+}
+
+.table tbody tr td:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background-color: var(--background-color);
+}
+
+.hs-scroll {
+    overflow: auto;
+}

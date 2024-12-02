@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Crear orden</title>
+{% endblock %}
+
+{% block container %}
+{% if form.non_field_errors %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+{% if form.quantity.errors %}
+    <div class="text-danger">
+        {{ form.quantity.errors|striptags }}
+    </div>
+{% endif %}
+{% if form.start_date.errors %}
+    <div class="text-danger">
+        {{ form.start_date.errors|striptags }}
+    </div>
+{% endif %}
+{% if form.delivery_date.errors %}
+    <div class="text-danger">
+        {{ form.delivery_date.errors|striptags }}
+    </div>
+{% endif %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Crear Orden</h2>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_client" class="form-label">Cliente</label>
+            <div class="input-group">
+                {{ form.client }}
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addClientModal">
+                    Agregar Cliente
+                </button>
+            </div>            
+        </div>
+        <div class="mb-3">
+            <label for="id_description" class="form-label">Descripción</label>
+            {{ form.description }}
+        </div>
+        <div class="mb-3">
+            <label for="id_quantity" class="form-label">Cantidad</label>
+            {{ form.quantity }}
+        </div>
+        <div class="mb-3">
+            <label for="id_start_date" class="form-label">Fecha de inicio</label>
+            {{ form.start_date }}
+        </div>
+        <div class="mb-3">
+            <label for="id_delivery_date" class="form-label">Fecha de entrega</label>
+            {{ form.delivery_date }}
+        </div>
+        <div class="mb-3">
+            <label for="id_status" class="form-label">Estado</label>
+            {{ form.status }}
+        </div>
+        <div class="mb-3">
+            <label for="id_observations" class="form-label">Observaciones</label>
+            {{ form.observations }}
+        </div>
+        <button type="submit" class="btn btn-primary">Crear Orden</button>
+    </form>
+</div>
+
+<!-- Modal para agregar cliente -->
+<div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="add-client-form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addClientModalLabel">Agregar Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="client_name" class="form-label">Nombre del Cliente</label>
+                        <input type="text" name="name" id="client_name" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const clientForm = document.getElementById("add-client-form");
+        const clientModal = new bootstrap.Modal(document.getElementById("addClientModal"));
+        const clientSelector = document.getElementById("id_client");
+
+        clientForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const formData = new FormData(clientForm);
+
+            fetch("{% url 'add_client_ajax' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Añadir cliente al selector
+                    const option = new Option(data.client_name, data.client_id);
+                    clientSelector.add(option);
+                    clientSelector.value = data.client_id;
+
+                    // Cerrar el modal y limpiar el formulario
+                    clientModal.hide();
+                    clientForm.reset();
+                } else {
+                    alert(data.error || "Error al agregar el cliente.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    });
+</script>
+{% endblock %}
