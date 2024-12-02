@@ -10,6 +10,8 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
+# Probando
+
 @csrf_exempt
 def add_client_ajax(request):
     """Vista para agregar clientes vía AJAX."""
