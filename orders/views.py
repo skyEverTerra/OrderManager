@@ -65,15 +65,30 @@ class ManagementView(LoginRequiredMixin,ListView):
             .order_by("-start_date")
         )
 
-
 class CreateOrderView(LoginRequiredMixin, CreateView):
-    """Vista para crear órdenes."""
     model = Order
     form_class = CreateOrderForm
     template_name = "orders/create.html"
     success_url = reverse_lazy("order_list")
 
     def form_valid(self, form):
-        """Asignar el usuario autenticado como creador."""
+        """Guardar la orden junto con material y operador seleccionados."""
         form.instance.created_by = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        
+        # Manejo de material
+        material = form.cleaned_data.get('material')
+        material_quantity = form.cleaned_data.get('material_quantity')
+        if material and material_quantity:
+            OrderMaterial.objects.create(
+                order=self.object,
+                material=material,
+                material_quantity=material_quantity
+            )
+        
+        # Manejo de operador
+        operator = form.cleaned_data.get('operator')
+        if operator:
+            OrderUser.objects.create(order=self.object, user=operator)
+
+        return response

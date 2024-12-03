@@ -8,6 +8,22 @@ from django.contrib.auth import get_user_model
 
 class CreateOrderForm(forms.ModelForm):
     """Formulario para crear órdenes."""
+    material = forms.ModelChoiceField(
+        queryset=Material.objects.all(),
+        widget=forms.Select,
+        required=False,
+        label="Material"
+    )
+    material_quantity = forms.IntegerField(
+        required=False,
+        label="Cantidad de material"
+    )
+    operator = forms.ModelChoiceField(
+        queryset=User.objects.filter(role=2),  # Filtra usuarios operadores
+        widget=forms.Select,
+        required=False,
+        label="Operador"
+    )
     class Meta:
         model = Order
         fields = ['client', 'description', 'quantity', 'start_date', 'delivery_date', 'status', 'observations']
@@ -39,6 +55,8 @@ class CreateOrderForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['client'].widget.attrs.update({'class': 'form-select'})
+        self.fields['material'].queryset = Material.objects.all()
+        self.fields['operator'].queryset = User.objects.filter(role=2)
 
 
 class CustomAuthenticationForm(AuthenticationForm):

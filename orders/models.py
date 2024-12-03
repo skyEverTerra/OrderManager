@@ -32,7 +32,7 @@ class Material(models.Model):
     stock = models.IntegerField()
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name} ({self.stock})"
 
 
 class OrderStatus(models.Model):
