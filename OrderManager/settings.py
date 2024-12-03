@@ -30,6 +30,12 @@ ALLOWED_HOSTS = [
     "localhost"
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "ordermanager-production.up.railway.app",
+    "localhost"
+]
+
+
 
 # Application definition
 
