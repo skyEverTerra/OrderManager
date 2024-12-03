@@ -2,6 +2,9 @@ from django import forms
 from orders.models import Order, Client, Material, OrderMaterial, OrderUser, User
 from django.core.exceptions import ValidationError
 from datetime import date
+from django.contrib.auth.forms import AuthenticationForm
+
+from django.contrib.auth import get_user_model
 
 class CreateOrderForm(forms.ModelForm):
     """Formulario para crear órdenes."""
@@ -36,3 +39,18 @@ class CreateOrderForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['client'].widget.attrs.update({'class': 'form-select'})
+
+
+class CustomAuthenticationForm(AuthenticationForm):
+    def confirm_login_allowed(self, user):
+        if not user.is_active:
+            raise forms.ValidationError("Esta cuenta está inactiva.", code='inactive')
+
+    def clean_username(self):
+        email = self.cleaned_data.get('username')
+        User = get_user_model()
+        try:
+            user = User.objects.get(email=email)
+            return user.username  # Retorna el `username` correspondiente al correo
+        except User.DoesNotExist:
+            raise forms.ValidationError("No se encontró un usuario con este correo electrónico.")

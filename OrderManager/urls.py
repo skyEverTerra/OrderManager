@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.contrib.auth.views import LogoutView
 
 from orders import views as order_views # Añadir url para ver
 
@@ -24,6 +25,8 @@ urlpatterns = [
 
     path("", order_views.ManagementView.as_view(), name='order_list'),
     path("redirect/", order_views.user_redirect, name="redirect"),
+    path("login/", order_views.UserLoginView.as_view(), name="login"),
     path("crear_orden/", order_views.CreateOrderView.as_view(), name='create_order'),
     path("add_client_ajax/", order_views.add_client_ajax, name="add_client_ajax"),
+    path('logout/', LogoutView.as_view(), name='user_logout'),
 ]

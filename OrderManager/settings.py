@@ -25,7 +25,10 @@ SECRET_KEY = "django-insecure-77b(zp$z6g7&9oe85#(gg@5)szyg6^3t1)3zx6z#3wu=s98l%+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "ordermanager-production.up.railway.app",
+    "localhost"
+]
 
 
 # Application definition
@@ -127,3 +130,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = 'orders.User'
+
+LOGIN_URL = "/login/"
+LOGOUT_REDIRECT_URL = '/'

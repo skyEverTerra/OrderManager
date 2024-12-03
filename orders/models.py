@@ -23,7 +23,7 @@ class Client(models.Model):
     name = models.CharField(max_length=128)
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
 
 class Material(models.Model):
@@ -32,7 +32,7 @@ class Material(models.Model):
     stock = models.IntegerField()
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
 
 class OrderStatus(models.Model):
@@ -41,7 +41,7 @@ class OrderStatus(models.Model):
     color = models.CharField(max_length=10)
 
     def __str__(self):
-        return self.status
+        return f"{self.status}"
 
 
 class Order(models.Model):
@@ -56,7 +56,7 @@ class Order(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_orders")
 
     def __str__(self):
-        return f"{self.client.name}"
+        return f"{self.id}"
 
 
 class OrderUser(models.Model):

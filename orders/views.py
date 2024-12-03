@@ -9,8 +9,8 @@ from django.forms import modelformset_factory
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-
-# Probando
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.decorators import login_required
 
 @csrf_exempt
 def add_client_ajax(request):
@@ -22,6 +22,7 @@ def add_client_ajax(request):
             return JsonResponse({"success": True, "client_id": client.id, "client_name": client.name}, status=201)
         return JsonResponse({"success": False, "error": "Nombre del cliente es obligatorio."}, status=400)
 
+@login_required
 def user_redirect(request):
     """ Redirecciona """
     privileges = request.user.role - 1
@@ -30,12 +31,26 @@ def user_redirect(request):
     )
     return redirect(to_url[privileges])
 
+class UserLoginView(LoginView):
+    template_name = "login.html"
+    form_class = CustomAuthenticationForm
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        return reverse_lazy('order_list')
+    
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        return super().form_invalid(form)
+
 # Create your views here.
 # class ManagementView(TemplateView, LoginRequiredMixin):
 #     """ Order management view """
 #     template_name = "orders/management.html"
 
-class ManagementView(ListView):
+class ManagementView(LoginRequiredMixin,ListView):
     """Vista de administración para listar órdenes."""
     model = Order
     template_name = "orders/management.html"
