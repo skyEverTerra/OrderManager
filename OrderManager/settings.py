@@ -31,7 +31,7 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "ordermanager-production.up.railway.app",
+    "https://ordermanager-production.up.railway.app"
     "localhost"
 ]
 
