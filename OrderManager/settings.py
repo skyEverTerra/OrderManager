@@ -32,10 +32,9 @@ ALLOWED_HOSTS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "https://ordermanager-production.up.railway.app"
-    "localhost"
 ]
 
-
+CSRF_COOKIE_SECURE = True
 
 # Application definition
 
