@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import CreateView, DetailView, ListView, TemplateView
+from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from orders.models import Order, Client, Material, OrderMaterial, OrderUser, User, OrderStatus
 from orders.forms import *
@@ -17,7 +17,9 @@ def add_client_ajax(request):
     """Vista para agregar clientes vía AJAX."""
     if request.method == "POST":
         name = request.POST.get("name")
-        if name:
+        if name: # agregar if name in Client.object. se encuentra...
+            if Client.objects.filter(name=name).exists():
+                return JsonResponse({"success": False, "error": "Ya existe un cliente con este nombre."}, status=400)
             client = Client.objects.create(name=name)
             return JsonResponse({"success": True, "client_id": client.id, "client_name": client.name}, status=201)
         return JsonResponse({"success": False, "error": "Nombre del cliente es obligatorio."}, status=400)
@@ -55,7 +57,7 @@ class ManagementView(LoginRequiredMixin,ListView):
     model = Order
     template_name = "orders/management.html"
     context_object_name = "orders"
-    paginate_by = 10
+    paginate_by = 3
 
     def get_queryset(self):
         # Prefetch operadores y materiales relacionados
@@ -66,6 +68,7 @@ class ManagementView(LoginRequiredMixin,ListView):
         )
 
 class CreateOrderView(LoginRequiredMixin, CreateView):
+    """ Guardar orden """
     model = Order
     form_class = CreateOrderForm
     template_name = "orders/create.html"
@@ -85,6 +88,10 @@ class CreateOrderView(LoginRequiredMixin, CreateView):
                 material=material,
                 material_quantity=material_quantity
             )
+            material.stock -= material_quantity
+            if material.stock < 0:
+                material.stock = 0  # Evitar negativos
+            material.save()
         
         # Manejo de operador
         operator = form.cleaned_data.get('operator')
@@ -92,3 +99,77 @@ class CreateOrderView(LoginRequiredMixin, CreateView):
             OrderUser.objects.create(order=self.object, user=operator)
 
         return response
+
+
+class EditOrderView(LoginRequiredMixin, UpdateView):
+    """ Editar la orden """
+    model = Order
+    form_class = CreateOrderForm
+    template_name = "orders/edit_order.html"
+    success_url = reverse_lazy("order_list")
+
+    def get_context_data(self, **kwargs):
+        """Añadir datos adicionales al contexto para prellenar campos personalizados."""
+        context = super().get_context_data(**kwargs)
+        # Obtener material y operador existentes
+        order_material = self.object.order_materials.first()
+        order_operator = self.object.order_users.first()
+
+        if order_material:
+            context['material_selected'] = order_material.material
+            context['material_quantity_selected'] = order_material.material_quantity
+        if order_operator:
+            context['operator_selected'] = order_operator.user
+
+        return context
+
+    def form_valid(self, form):
+        """Actualizar la orden junto con material y operador seleccionados."""
+        form.instance.created_by = self.request.user
+        response = super().form_valid(form)
+
+        # Manejo de material
+        material = form.cleaned_data.get('material')
+        material_quantity = form.cleaned_data.get('material_quantity')
+        order_material = self.object.order_materials.first()
+
+        if order_material:
+            # Revertir el stock anterior
+            order_material.material.stock += order_material.material_quantity
+            order_material.material.save()
+
+            if material and material_quantity:
+                # Actualizar material
+                order_material.material = material
+                order_material.material_quantity = material_quantity
+                order_material.save()
+
+                # Reducir nuevo stock
+                material.stock -= material_quantity
+                if material.stock < 0:
+                    material.stock = 0
+                material.save()
+        elif material and material_quantity:
+            OrderMaterial.objects.create(
+                order=self.object,
+                material=material,
+                material_quantity=material_quantity
+            )
+            material.stock -= material_quantity
+            if material.stock < 0:
+                material.stock = 0
+            material.save()
+
+        # Manejo de operador
+        operator = form.cleaned_data.get('operator')
+        order_operator = self.object.order_users.first()
+
+        if order_operator:
+            # Actualizar operador existente
+            order_operator.user = operator
+            order_operator.save()
+        elif operator:
+            OrderUser.objects.create(order=self.object, user=operator)
+
+        return response
+

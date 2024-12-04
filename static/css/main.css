@@ -13,26 +13,59 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
+    overflow: hidden;
 }
 
-/* Navigation bar */
+/* Definir altura de la barra de navegación */
 .navbar {
     background-color: var(--primary-color);
-    padding: 10px 20px;
+    height: 10vh; /* 10% de la altura de la pantalla */
+    display: flex;
+    align-items: center; /* Centrar elementos verticalmente */
+    padding: 0 20px; /* Espaciado horizontal */
 }
 
+/* Ajustar elementos de la marca */
 .navbar-brand {
+    display: flex;
+    align-items: center; /* Centrar el contenido del logo verticalmente */
+    justify-content: center; /* Asegura que el logo esté centrado */
+    padding: 0; /* Evitar espacio adicional que desalinearía el logo */
+    margin: 0; /* Eliminar márgenes no deseados */
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Ajustar las imágenes y elementos */
 .nav-item img, 
 .nav-item i {
     transition: transform 0.2s ease;
+    max-height: 100%; /* Usar todo el espacio disponible dentro del navbar */
 }
 
 .nav-item:hover img,
 .nav-item:hover i {
     transform: scale(1.1); 
+}
+
+/* Ajustar contenedor principal para distribuir espacio */
+.container-fluid {
+    display: flex;
+    justify-content: space-between; /* Separar logo y opciones de perfil */
+    align-items: center; /* Centrar todos los elementos verticalmente */
+    height: 100%; /* Asegura que el contenedor ocupe todo el alto del navbar */
+}
+
+/* Opciones del perfil */
+.nav-icon {
+    display: flex;
+    align-items: center; /* Centrar los íconos verticalmente */
+    gap: 15px; /* Espaciado entre los íconos */
+}
+
+.nav-item img {
+    height: auto; /* Mantener proporciones de la imagen */
+    max-height: 50px; /* Limitar el alto máximo de la imagen */
+    border-radius: 50%; /* Imagen redonda */
 }
 
 /* Container */
@@ -47,15 +80,24 @@ body {
 .rounded-container {
     background-color: var(--background-color);
     border-radius: 15px;
-    padding: 20px;
     height: 100%;
-    overflow: auto;
-    max-height: 83vh;
+    overflow: hidden;
+    max-height: 90vh;
 }
 
 .container-wrapper {
     flex: 1;
     margin: 10px;
+}
+
+/* containers */
+.scroll-container {
+    overflow-y: auto;
+    padding: 1rem;
+    max-height: calc(90vh - 20px)
+}
+
+.form-container {
 }
 
 /* Management */

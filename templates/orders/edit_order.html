@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-<title>Crear orden</title>
+<title>Editar orden</title>
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -36,8 +36,8 @@
 
 {% block container %}
 <div class="form-container scroll-container">
-    <h2 class="mb-4">Crear Orden</h2>
-    
+    <h2 class="mb-4">Editar Orden</h2>
+
     <!-- Mostrar errores generales del formulario -->
     {% if form.non_field_errors %}
         <div class="alert alert-danger">
@@ -53,13 +53,7 @@
         {% csrf_token %}
         <div class="mb-3">
             <label for="id_client" class="form-label">Cliente</label>
-            <div class="input-group">
-                {{ form.client }}
-                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addClientModal">
-                    Agregar Cliente
-                </button>
-            </div>
-            <!-- Mostrar errores del campo cliente -->
+            {{ form.client }}
             {% for error in form.client.errors %}
                 <div class="text-danger">{{ error }}</div>
             {% endfor %}
@@ -68,7 +62,6 @@
         <div class="mb-3">
             <label for="id_description" class="form-label">Descripción</label>
             {{ form.description }}
-            <!-- Mostrar errores del campo descripción -->
             {% for error in form.description.errors %}
                 <div class="text-danger">{{ error }}</div>
             {% endfor %}
@@ -77,7 +70,6 @@
         <div class="mb-3">
             <label for="id_quantity" class="form-label">Cantidad</label>
             {{ form.quantity }}
-            <!-- Mostrar errores del campo cantidad -->
             {% for error in form.quantity.errors %}
                 <div class="text-danger">{{ error }}</div>
             {% endfor %}
@@ -139,32 +131,9 @@
             {% endfor %}
         </div>
 
-        <button type="submit" class="btn btn-primary">Crear Orden</button>
-        <a class="btn btn-secondary" href="{% url 'redirect' %}">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a class="btn btn-secondary" href="{% url 'order_list' %}">Cancelar</a>
     </form>
-</div>
-
-<!-- Modal para agregar cliente -->
-<div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="add-client-form">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addClientModalLabel">Agregar Cliente</h5>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="client_name" class="form-label">Nombre del Cliente</label>
-                        <input type="text" name="name" id="client_name" class="form-control" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary btn-color">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
 </div>
 
 <script>

@@ -29,4 +29,6 @@ urlpatterns = [
     path("crear_orden/", order_views.CreateOrderView.as_view(), name='create_order'),
     path("add_client_ajax/", order_views.add_client_ajax, name="add_client_ajax"),
     path('logout/', LogoutView.as_view(), name='user_logout'),
+
+    path('ord<int:pk>/', order_views.EditOrderView.as_view(), name='edit_order'),
 ]
