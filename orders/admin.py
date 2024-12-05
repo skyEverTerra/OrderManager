@@ -1,7 +1,7 @@
 """ Model administrator """
 
 from django.contrib import admin
-from .models import User, Client, Material, OrderStatus, Order, OrderUser, OrderMaterial
+from .models import User, Client, OrderStatus, Order, OrderUser
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -13,11 +13,6 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('name',)
-    search_fields = ('name',)
-
-@admin.register(Material)
-class MaterialAdmin(admin.ModelAdmin):
-    list_display = ('name', 'stock')
     search_fields = ('name',)
 
 @admin.register(OrderStatus)
@@ -39,10 +34,3 @@ class OrderUserAdmin(admin.ModelAdmin):
     list_filter = ('order', 'user')
     search_fields = ('order__id', 'user__username')
     autocomplete_fields = ('order', 'user')
-
-@admin.register(OrderMaterial)
-class OrderMaterialAdmin(admin.ModelAdmin):
-    list_display = ('order', 'material', 'material_quantity')
-    list_filter = ('order', 'material')
-    search_fields = ('order__id', 'material__name')
-    autocomplete_fields = ('order', 'material')

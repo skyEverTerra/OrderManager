@@ -26,15 +26,6 @@ class Client(models.Model):
         return f"{self.name}"
 
 
-class Material(models.Model):
-    """ Material model """
-    name = models.CharField(max_length=128)
-    stock = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.name} ({self.stock})"
-
-
 class OrderStatus(models.Model):
     """ Status model"""
     status = models.CharField(max_length=20)
@@ -47,8 +38,8 @@ class OrderStatus(models.Model):
 class Order(models.Model):
     """ Order model """
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="orders")
-    description = models.TextField()
-    quantity = models.IntegerField()
+    description = models.TextField() # specification description
+    quantity = models.IntegerField() # solicited cuantity
     start_date = models.DateField()
     delivery_date = models.DateField()
     status = models.ForeignKey(OrderStatus, on_delete=models.CASCADE, related_name="orders")
@@ -67,12 +58,3 @@ class OrderUser(models.Model):
     def __str__(self):
         return f"{self.user.username} en {self.order.description}"
 
-
-class OrderMaterial(models.Model):
-    """ Material and order Model"""
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_materials")
-    material = models.ForeignKey(Material, on_delete=models.CASCADE, related_name="material_orders")
-    material_quantity = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.material_quantity} de {self.material.name} para la orden {self.order.description}"

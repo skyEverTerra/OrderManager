@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from orders.models import Order, Client, Material, OrderMaterial, OrderUser, User, OrderStatus
+from orders.models import Order, Client, OrderUser, User, OrderStatus
 from orders.forms import *
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
@@ -63,7 +63,7 @@ class ManagementView(LoginRequiredMixin,ListView):
         # Prefetch operadores y materiales relacionados
         return (
             Order.objects.select_related("client", "status", "created_by")
-            .prefetch_related("order_users__user", "order_materials__material")
+            .prefetch_related("order_users__user")
             .order_by("-start_date")
         )
 
@@ -78,26 +78,9 @@ class CreateOrderView(LoginRequiredMixin, CreateView):
         """Guardar la orden junto con material y operador seleccionados."""
         form.instance.created_by = self.request.user
         response = super().form_valid(form)
-        
-        # Manejo de material
-        material = form.cleaned_data.get('material')
-        material_quantity = form.cleaned_data.get('material_quantity')
-        if material and material_quantity:
-            OrderMaterial.objects.create(
-                order=self.object,
-                material=material,
-                material_quantity=material_quantity
-            )
-            material.stock -= material_quantity
-            if material.stock < 0:
-                material.stock = 0  # Evitar negativos
-            material.save()
-        
-        # Manejo de operador
         operator = form.cleaned_data.get('operator')
         if operator:
             OrderUser.objects.create(order=self.object, user=operator)
-
         return response
 
 
@@ -109,15 +92,9 @@ class EditOrderView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("order_list")
 
     def get_context_data(self, **kwargs):
-        """Añadir datos adicionales al contexto para prellenar campos personalizados."""
         context = super().get_context_data(**kwargs)
-        # Obtener material y operador existentes
-        order_material = self.object.order_materials.first()
         order_operator = self.object.order_users.first()
 
-        if order_material:
-            context['material_selected'] = order_material.material
-            context['material_quantity_selected'] = order_material.material_quantity
         if order_operator:
             context['operator_selected'] = order_operator.user
 
@@ -127,38 +104,6 @@ class EditOrderView(LoginRequiredMixin, UpdateView):
         """Actualizar la orden junto con material y operador seleccionados."""
         form.instance.created_by = self.request.user
         response = super().form_valid(form)
-
-        # Manejo de material
-        material = form.cleaned_data.get('material')
-        material_quantity = form.cleaned_data.get('material_quantity')
-        order_material = self.object.order_materials.first()
-
-        if order_material:
-            # Revertir el stock anterior
-            order_material.material.stock += order_material.material_quantity
-            order_material.material.save()
-
-            if material and material_quantity:
-                # Actualizar material
-                order_material.material = material
-                order_material.material_quantity = material_quantity
-                order_material.save()
-
-                # Reducir nuevo stock
-                material.stock -= material_quantity
-                if material.stock < 0:
-                    material.stock = 0
-                material.save()
-        elif material and material_quantity:
-            OrderMaterial.objects.create(
-                order=self.object,
-                material=material,
-                material_quantity=material_quantity
-            )
-            material.stock -= material_quantity
-            if material.stock < 0:
-                material.stock = 0
-            material.save()
 
         # Manejo de operador
         operator = form.cleaned_data.get('operator')

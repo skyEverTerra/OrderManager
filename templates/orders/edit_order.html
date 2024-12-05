@@ -108,22 +108,6 @@
         </div>
 
         <div class="mb-3">
-            <label for="id_material" class="form-label">Material</label>
-            {{ form.material }}
-            {% for error in form.material.errors %}
-                <div class="text-danger">{{ error }}</div>
-            {% endfor %}
-        </div>
-
-        <div class="mb-3">
-            <label for="id_material_quantity" class="form-label">Cantidad de material</label>
-            {{ form.material_quantity }}
-            {% for error in form.material_quantity.errors %}
-                <div class="text-danger">{{ error }}</div>
-            {% endfor %}
-        </div>
-
-        <div class="mb-3">
             <label for="id_operator" class="form-label">Operador</label>
             {{ form.operator }}
             {% for error in form.operator.errors %}

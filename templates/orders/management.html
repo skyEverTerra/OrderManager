@@ -26,9 +26,8 @@
                 <tr>
                     <th>Orden</th>
                     <th>Cliente</th>
-                    <th>Descripción</th>
+                    <th>Especificaciones</th>
                     <th>Operadores</th>
-                    <th>Material</th>
                     <th>Cantidad</th>
                     <th>Estado</th>
                     <th>Inicio</th>
@@ -51,13 +50,10 @@
                         </ul>
                         {{ order.id }}
                     </td>
-                    
                     <!-- Cliente -->
                     <td>{{ order.client.name }}</td>
-                    
                     <!-- Descripción -->
                     <td>{{ order.description }}</td>
-                    
                     <!-- Operadores -->
                     <td>
                         <ul class="list-unstyled mb-0">
@@ -66,50 +62,18 @@
                             {% endfor %}
                         </ul>
                     </td>
-                    
-                    <!-- Materiales -->
-                    <td>
-                        <ul class="list-unstyled mb-0">
-                            {% for order_material in order.order_materials.all %}
-                            <li>{{ order_material.material.name }} ({{ order_material.material_quantity }})</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    
                     <!-- Cantidad -->
                     <td>{{ order.quantity }}</td>
-                    
                     <!-- Estado -->
-                    <td>
-                        <a href="">
-                            <span class="badge" style="background-color: {{ order.status.color }}">{{ order.status.status }}</span>
-                        </a>
-                    </td>
-                    
+                    <td><span class="badge" style="background-color: {{ order.status.color }}">{{ order.status.status }}</span></td>
                     <!-- Fecha de inicio -->
                     <td>{{ order.start_date }}</td>
-                    
                     <!-- Fecha de entrega -->
                     <td>{{ order.delivery_date }}</td>
-                    
                     <!-- Observaciones -->
                     <td>{{ order.observations }}</td>
                 </tr>
                 {% endfor %}
-                <!-- Filas -->
-                <tr>
-                    <td class="d-flex align-items-center"><a class="btn btn-sm btn-light me-2"><strong>⁝</strong>{#<img src="{% static 'img/three-dots.png' %}" height="16">#}</a>1</td>
-                    <td>Ever Garcia</td>
-                    <td>Ejes de acero</td>
-                    <td>Operador Juan</td>
-                    <td>Acero 1020</td>
-                    <td>10</td>
-                    <td><span class="badge bg-success">Completado</span></td>
-                    <td>2024-11-01</td>
-                    <td>2024-11-10</td>
-                    <td>Material recibido</td>
-                </tr>
-                <!-- Final de fila -->
             </tbody>
         </table>
     </div>

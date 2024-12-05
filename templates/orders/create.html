@@ -9,7 +9,8 @@
     <style>
         /* Personalizar el contenedor de Select2 para que tenga el mismo tamaño que un botón de Bootstrap */
         .select2-container {
-            width: 100% !important; /* Hacer que el select ocupe todo el ancho */
+            width: auto !important; /* Hacer que el select ocupe todo el ancho */
+            min-width: 50%;
             height: auto; /* Dejar que el tamaño del select se ajuste según el contenido */
         }
 
@@ -66,7 +67,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="id_description" class="form-label">Descripción</label>
+            <label for="id_description" class="form-label">Especificaciones</label>
             {{ form.description }}
             <!-- Mostrar errores del campo descripción -->
             {% for error in form.description.errors %}
@@ -75,7 +76,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="id_quantity" class="form-label">Cantidad</label>
+            <label for="id_quantity" class="form-label">Cantidad requerida</label>
             {{ form.quantity }}
             <!-- Mostrar errores del campo cantidad -->
             {% for error in form.quantity.errors %}
@@ -111,22 +112,6 @@
             <label for="id_observations" class="form-label">Observaciones</label>
             {{ form.observations }}
             {% for error in form.observations.errors %}
-                <div class="text-danger">{{ error }}</div>
-            {% endfor %}
-        </div>
-
-        <div class="mb-3">
-            <label for="id_material" class="form-label">Material</label>
-            {{ form.material }}
-            {% for error in form.material.errors %}
-                <div class="text-danger">{{ error }}</div>
-            {% endfor %}
-        </div>
-
-        <div class="mb-3">
-            <label for="id_material_quantity" class="form-label">Cantidad de material</label>
-            {{ form.material_quantity }}
-            {% for error in form.material_quantity.errors %}
                 <div class="text-danger">{{ error }}</div>
             {% endfor %}
         </div>
