@@ -3,9 +3,6 @@
 from django.contrib import admin
 from .models import User, Client, OrderStatus, Order, OrderUser
 
-
-
-
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ('username', 'first_name', 'f_lastname', 'm_lastname', 'role', 'email', 'is_active')

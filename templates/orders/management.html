@@ -14,17 +14,24 @@
     <!-- Acciones -->
     <div class="actions-row d-flex justify-content-between align-items-center">
         <a class="btn btn-primary btn-color" href="{% url 'create_order' %}">+ Agregar Orden</a>
+        <form method="get" action="{% url 'order_list' %}" class="d-flex flex-grow-1 mx-3">
+            <input 
+                type="text" 
+                name="search" 
+                class="form-control me-2 flex-grow-1" 
+                placeholder="Buscar..." 
+                value="{{ request.GET.search|default_if_none:'' }}"
+            />
+            <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+        </form>
         <div>
-            <button class="btn btn-outline-secondary mx-1">Buscar</button>
-            <div class="d-inline-block">
-                <a class="btn btn-outline-secondary mx-1 dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                    Ver
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <li><a class="dropdown-item" href="?select_by=archivado">Archivados</a></li>
-                    <li><a class="dropdown-item" href="?select_by=cancelado">Cancelados</a></li>
-                </ul>
-            </div>
+            <a class="btn btn-outline-secondary mx-1 dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                Ver
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li><a class="dropdown-item" href="?select_by=archivado">Archivados</a></li>
+                <li><a class="dropdown-item" href="?select_by=cancelado">Cancelados</a></li>
+            </ul>
             <a class="btn btn-outline-secondary mx-1" href="{% url 'redirect' %}">Actualizar</a>
         </div>
     </div>
@@ -34,14 +41,14 @@
         <table class="table table-bordered table-striped align-middle">
             <thead class="table-dark">
                 <tr>
-                    <th>Orden <a href="?order_by=id" style="color: white;">•</a></th>
+                    <th>Orden <a href="?order_by=id&order_direction={% if request.GET.order_direction == 'desc' %}asc{% else %}desc{% endif %}" style="color: white;">•</a></th>
                     <th>Cliente</th>
                     <th>Especificaciones</th>
                     <th>Operadores</th>
                     <th>Cantidad</th>
                     <th>Estado</th>
-                    <th>Inicio <a href="?order_by=start_date" style="color: white;">•</a></th>
-                    <th>Entrega <a href="?order_by=delivery_date" style="color: white;">•</a></th>
+                    <th>Inicio <a href="?order_by=start_date&order_direction={% if request.GET.order_direction == 'desc' %}asc{% else %}desc{% endif %}" style="color: white;">•</a></th>
+                    <th>Entrega <a href="?order_by=delivery_date&order_direction={% if request.GET.order_direction == 'desc' %}asc{% else %}desc{% endif %}" style="color: white;">•</a></th>
                     <th>Observaciones</th>
                 </tr>
             </thead>

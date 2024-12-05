@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+<title>Lista de ordenes</title>
+{% endblock %}
+
+{% block container %}
+<div class="scroll-container">
+    {% for order in orders %}
+    <div style="border: 5px solid {{ order.status.color }}; background-color: white; padding: 15px; margin: 10px; border-radius: 10px;">
+        <p><strong>Orden N°:</strong> {{ order.id }} <span>({{ order.status }})</span></p>
+        <p><strong>Especificación:</strong> {{ order.description|urlize }}</p>
+        <p><strong>Inicio:</strong> {{ order.start_date }}</p>
+        <p><strong>Entrega:</strong> {{ order.delivery_date }}</p>
+        <p><strong>Observaciones:</strong> {{ order.observations }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

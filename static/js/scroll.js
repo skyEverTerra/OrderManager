@@ -12,8 +12,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const orderBy = getUrlParameter('order_by') || 'delivery_date';
     const selectBy = getUrlParameter('select_by') || '';
+    const direct = getUrlParameter('order_direction') || '';
+    const search = getUrlParameter('search') || '';
 
-    loader.style.display = "table-row";  // Lo hacemos visible inicialmente solo para la prueba
+    loader.style.display = "table-row";
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -34,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function loadMoreOrders() {
         console.log("Cargando más órdenes, página:", page);
         loader.style.display = "table-row";
-        fetch(`?page=${page}&order_by=${orderBy}&select_by=${selectBy}`, { headers: { "x-requested-with": "XMLHttpRequest" } })
+        fetch(`?page=${page}&order_by=${orderBy}&select_by=${selectBy}&order_direction=${direct}&search=${search}`, { headers: { "x-requested-with": "XMLHttpRequest" } })
             .then(response => {
                 if (!response.ok) throw new Error("Network response was not ok");
                 return response.json();

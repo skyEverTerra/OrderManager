@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from orders.models import Order, Client, OrderUser, User, OrderStatus
 from orders.forms import *
 from django.urls import reverse_lazy
@@ -12,6 +12,32 @@ from django.http import JsonResponse
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.admin.views.decorators import staff_member_required
+
+
+@staff_member_required
+def archivar_orden(request, order_id):
+    archived_status, created = OrderStatus.objects.get_or_create(status='archivado', defaults={'color': 'gray'})
+    
+    order = get_object_or_404(Order, id=order_id)
+
+    order.status = archived_status
+    order.save()
+
+    return redirect('redirect')
+
+@staff_member_required
+def eliminar_orden(request, order_id):
+    canceled_status, created = OrderStatus.objects.get_or_create(status='cancelado', defaults={'color': 'red'})
+    
+    order = get_object_or_404(Order, id=order_id)
+
+    order.status = canceled_status
+    order.save()
+
+    return redirect('redirect')
 
 @csrf_exempt
 def add_client_ajax(request):
@@ -31,6 +57,7 @@ def user_redirect(request):
     privileges = request.user.role - 1
     to_url = (
         'order_list', # Si es administrador
+        'list',
     )
     return redirect(to_url[privileges])
 
@@ -53,7 +80,7 @@ class UserLoginView(LoginView):
 #     """ Order management view """
 #     template_name = "orders/management.html"
 
-class ManagementView(LoginRequiredMixin,ListView):
+class ManagementView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     """Vista de administración para listar órdenes."""
     model = Order
     template_name = "orders/management.html"
@@ -61,24 +88,39 @@ class ManagementView(LoginRequiredMixin,ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        # Prefetch operadores y materiales relacionados
         order_by = self.request.GET.get('order_by', 'delivery_date')
+        order_direction = self.request.GET.get('order_direction', 'asc')
+        search_query = self.request.GET.get('search', '').strip()
         select_by = self.request.GET.get('select_by', None)
         valid_order_fields = ['id', 'delivery_date', 'start_date']
 
         if order_by not in valid_order_fields:
             order_by = 'delivery_date'
 
+        if order_direction == 'desc':
+            order_by = f'-{order_by}'
+
         queryset = (
             Order.objects.select_related("client", "status", "created_by")
             .prefetch_related("order_users__user")
         )
 
+        # Filtro por estado si está presente
         if select_by:
             queryset = queryset.filter(status__status=select_by)
-            return queryset.order_by(order_by)
-        
+            return queryset
+
         excluded_statuses = ['archivado', 'cancelado']
+
+        # búsqueda
+        if search_query:
+            queryset = queryset.filter(
+                Q(client__name__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(status__status__icontains=search_query) |
+                Q(id__icontains=search_query)
+            )
+            excluded_statuses = []
         queryset = queryset.exclude(status__status__in=excluded_statuses)
 
         return queryset.order_by(order_by)
@@ -91,9 +133,15 @@ class ManagementView(LoginRequiredMixin,ListView):
             rendered_orders = render_to_string('orders/partials/order_list.html', {'orders': context['orders']})
             return JsonResponse({'orders': rendered_orders}, status=200)
         return super().get(request, *args, **kwargs)
+    
+    def test_func(self):
+        return self.request.user.is_staff
+    
+    def handle_no_permission(self):
+        return redirect('redirect')
 
 
-class CreateOrderView(LoginRequiredMixin, CreateView):
+class CreateOrderView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     """ Guardar orden """
     model = Order
     form_class = CreateOrderForm
@@ -108,9 +156,15 @@ class CreateOrderView(LoginRequiredMixin, CreateView):
         if operator:
             OrderUser.objects.create(order=self.object, user=operator)
         return response
+    
+    def test_func(self):
+        return self.request.user.is_staff
+    
+    def handle_no_permission(self):
+        return redirect('redirect')
 
 
-class EditOrderView(LoginRequiredMixin, UpdateView):
+class EditOrderView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """ Editar la orden """
     model = Order
     form_class = CreateOrderForm
@@ -143,3 +197,20 @@ class EditOrderView(LoginRequiredMixin, UpdateView):
             OrderUser.objects.create(order=self.object, user=operator)
 
         return response
+    
+    def test_func(self):
+        return self.request.user.is_staff
+    
+    def handle_no_permission(self):
+        return redirect('redirect')
+
+
+class OperatorView(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = "orders/operator.html"
+    context_object_name = "orders"
+    paginate_by = 25
+
+    def get_queryset(self):
+        # Filtrar órdenes relacionadas con el usuario autenticado
+        return Order.objects.filter(order_users__user=self.request.user)

@@ -28,7 +28,10 @@ urlpatterns = [
     path("login/", order_views.UserLoginView.as_view(), name="login"),
     path("crear_orden/", order_views.CreateOrderView.as_view(), name='create_order'),
     path("add_client_ajax/", order_views.add_client_ajax, name="add_client_ajax"),
+    path('lista/', order_views.OperatorView.as_view(), name="list"),
     path('logout/', LogoutView.as_view(), name='user_logout'),
+    path('archivar/<int:order_id>/', order_views.archivar_orden, name='archivar_orden'),
+    path('eliminar/<int:order_id>/', order_views.eliminar_orden, name='eliminar_orden'),
 
     path('<int:pk>/', order_views.EditOrderView.as_view(), name='edit_order'),
 ]

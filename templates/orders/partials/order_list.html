@@ -1,15 +1,15 @@
 {% for order in orders %}
 <tr>
     <td class="d-flex align-items-center position-relative">
-        <a class="btn btn-sm btn-light me-2" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+        <a class="btn btn-sm btn-anim btn-light me-2" style="background-color: {{ order.status.color }};" href="#" data-bs-toggle="dropdown" aria-expanded="false">
             <strong>⁝</strong>
         </a>
         <ul class="dropdown-menu position-absolute start-100 translate-middle mt-2">
             <li><a class="dropdown-item" href="{% url 'edit_order' order.id %}">Editar</a></li>
-            <li><a class="dropdown-item" href="?order={{ order.id }}">Archivar</a></li>
-            <li><a class="dropdown-item" href="?order={{ order.id }}">Eliminar</a></li>
+            <li><a class="dropdown-item" href="{% url 'archivar_orden' order.id %}">Archivar</a></li>
+            <li><a class="dropdown-item" href="{% url 'eliminar_orden' order.id %}">Cancelar</a></li>
         </ul>
-        {{ order.id }}
+        N. {{ order.id }}
     </td>
     <td>{{ order.client.name }}</td>
     <td>{{ order.description }}</td>
