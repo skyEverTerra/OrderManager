@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
 
 @csrf_exempt
 def add_client_ajax(request):
@@ -57,15 +58,40 @@ class ManagementView(LoginRequiredMixin,ListView):
     model = Order
     template_name = "orders/management.html"
     context_object_name = "orders"
-    paginate_by = 3
+    paginate_by = 5
 
     def get_queryset(self):
         # Prefetch operadores y materiales relacionados
-        return (
+        order_by = self.request.GET.get('order_by', 'delivery_date')
+        select_by = self.request.GET.get('select_by', None)
+        valid_order_fields = ['id', 'delivery_date', 'start_date']
+
+        if order_by not in valid_order_fields:
+            order_by = 'delivery_date'
+
+        queryset = (
             Order.objects.select_related("client", "status", "created_by")
             .prefetch_related("order_users__user")
-            .order_by("-start_date")
         )
+
+        if select_by:
+            queryset = queryset.filter(status__status=select_by)
+            return queryset.order_by(order_by)
+        
+        excluded_statuses = ['archivado', 'cancelado']
+        queryset = queryset.exclude(status__status__in=excluded_statuses)
+
+        return queryset.order_by(order_by)
+
+    def get(self, request, *args, **kwargs):
+        # Si es una solicitud AJAX, retornar los datos en JSON
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            self.object_list = self.get_queryset()
+            context = self.get_context_data()
+            rendered_orders = render_to_string('orders/partials/order_list.html', {'orders': context['orders']})
+            return JsonResponse({'orders': rendered_orders}, status=200)
+        return super().get(request, *args, **kwargs)
+
 
 class CreateOrderView(LoginRequiredMixin, CreateView):
     """ Guardar orden """
@@ -117,4 +143,3 @@ class EditOrderView(LoginRequiredMixin, UpdateView):
             OrderUser.objects.create(order=self.object, user=operator)
 
         return response
-

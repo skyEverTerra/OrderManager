@@ -1,0 +1,29 @@
+{% for order in orders %}
+<tr>
+    <td class="d-flex align-items-center position-relative">
+        <a class="btn btn-sm btn-light me-2" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+            <strong>⁝</strong>
+        </a>
+        <ul class="dropdown-menu position-absolute start-100 translate-middle mt-2">
+            <li><a class="dropdown-item" href="{% url 'edit_order' order.id %}">Editar</a></li>
+            <li><a class="dropdown-item" href="?order={{ order.id }}">Archivar</a></li>
+            <li><a class="dropdown-item" href="?order={{ order.id }}">Eliminar</a></li>
+        </ul>
+        {{ order.id }}
+    </td>
+    <td>{{ order.client.name }}</td>
+    <td>{{ order.description }}</td>
+    <td>
+        <ul class="list-unstyled mb-0">
+            {% for order_user in order.order_users.all %}
+            <li>{{ order_user.user.first_name }} {{ order_user.user.f_lastname }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+    <td>{{ order.quantity }}</td>
+    <td><span class="badge" style="background-color: {{ order.status.color }}">{{ order.status.status }}</span></td>
+    <td>{{ order.start_date }}</td>
+    <td>{{ order.delivery_date }}</td>
+    <td>{{ order.observations }}</td>
+</tr>
+{% endfor %}

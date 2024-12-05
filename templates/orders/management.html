@@ -1,7 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}
 <title>Administrador de ordenes</title>
+<script src="{% static 'js/scroll.js' %}?v={% now 'U' %}" defer></script>
 {% endblock %}
 
 {% block container %}
@@ -14,8 +16,16 @@
         <a class="btn btn-primary btn-color" href="{% url 'create_order' %}">+ Agregar Orden</a>
         <div>
             <button class="btn btn-outline-secondary mx-1">Buscar</button>
-            <button class="btn btn-outline-secondary mx-1">Ver</button>
-            <button class="btn btn-outline-secondary mx-1">Actualizar</button>
+            <div class="d-inline-block">
+                <a class="btn btn-outline-secondary mx-1 dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    Ver
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <li><a class="dropdown-item" href="?select_by=archivado">Archivados</a></li>
+                    <li><a class="dropdown-item" href="?select_by=cancelado">Cancelados</a></li>
+                </ul>
+            </div>
+            <a class="btn btn-outline-secondary mx-1" href="{% url 'redirect' %}">Actualizar</a>
         </div>
     </div>
 
@@ -24,58 +34,31 @@
         <table class="table table-bordered table-striped align-middle">
             <thead class="table-dark">
                 <tr>
-                    <th>Orden</th>
+                    <th>Orden <a href="?order_by=id" style="color: white;">•</a></th>
                     <th>Cliente</th>
                     <th>Especificaciones</th>
                     <th>Operadores</th>
                     <th>Cantidad</th>
                     <th>Estado</th>
-                    <th>Inicio</th>
-                    <th>Entrega</th>
+                    <th>Inicio <a href="?order_by=start_date" style="color: white;">•</a></th>
+                    <th>Entrega <a href="?order_by=delivery_date" style="color: white;">•</a></th>
                     <th>Observaciones</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for order in orders %}
-                <tr>
-                    <!-- Orden -->
-                    <td class="d-flex align-items-center position-relative">
-                        <a class="btn btn-sm btn-light me-2" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                            <strong>⁝</strong>
-                        </a>
-                        <ul class="dropdown-menu position-absolute start-100 translate-middle mt-2">
-                            <li><a class="dropdown-item" href="{% url 'edit_order' order.id %}">Editar</a></li>
-                            <li><a class="dropdown-item" href="?order={{ order.id }}">Archivar</a></li>
-                            <li><a class="dropdown-item" href="?order={{ order.id }}">Eliminar</a></li>
-                        </ul>
-                        {{ order.id }}
-                    </td>
-                    <!-- Cliente -->
-                    <td>{{ order.client.name }}</td>
-                    <!-- Descripción -->
-                    <td>{{ order.description }}</td>
-                    <!-- Operadores -->
-                    <td>
-                        <ul class="list-unstyled mb-0">
-                            {% for order_user in order.order_users.all %}
-                            <li>{{ order_user.user.first_name }} {{ order_user.user.f_lastname }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <!-- Cantidad -->
-                    <td>{{ order.quantity }}</td>
-                    <!-- Estado -->
-                    <td><span class="badge" style="background-color: {{ order.status.color }}">{{ order.status.status }}</span></td>
-                    <!-- Fecha de inicio -->
-                    <td>{{ order.start_date }}</td>
-                    <!-- Fecha de entrega -->
-                    <td>{{ order.delivery_date }}</td>
-                    <!-- Observaciones -->
-                    <td>{{ order.observations }}</td>
-                </tr>
-                {% endfor %}
+            <tbody id="order-list">
+                {% include 'orders/partials/order_list.html' %}
             </tbody>
+            <tfoot>
+                <tr id="loader" style="display: none;">
+                    <td colspan="9" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>
+
 {% endblock %}
